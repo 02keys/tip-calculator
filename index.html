@@ -41,7 +41,7 @@
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      margin: 10px 0;
+      margin: 10px 5px 10px 0;
     }
     button:hover {
       background-color: #0056b3;
@@ -71,17 +71,16 @@
   <div class="container">
     <h2>Tip Distribution Calculator</h2>
     <label>Total Tips ($): <input type="number" id="totalTips" value="0"></label>
-    <label>Number of People: <input type="number" id="numPeople" value="0"></label>
     <label>Round Tips:
       <select id="roundingOption">
         <option value="noCoins">No Coins (Whole Dollars)</option>
         <option value="withCoins">Allow Coins</option>
       </select>
     </label>
-    <button onclick="generateInputs()">Set People</button>
+    <button onclick="addPerson()">Add Person</button>
+    <button onclick="calculateTips()">Calculate</button>
 
     <div id="peopleInputs"></div>
-    <button onclick="calculateTips()">Calculate</button>
 
     <table id="resultTable">
       <thead>
@@ -96,19 +95,15 @@
   </div>
 
   <script>
-    function generateInputs() {
-      const numPeople = parseInt(document.getElementById("numPeople").value);
+    function addPerson() {
       const container = document.getElementById("peopleInputs");
-      container.innerHTML = "";
-      for (let i = 0; i < numPeople; i++) {
-        const row = document.createElement("div");
-        row.className = "input-row";
-        row.innerHTML = `
-          <label>Name:<br><input type="text" class="nameInput"></label>
-          <label>Hours:<br><input type="number" class="hoursInput" step="0.01"></label>
-        `;
-        container.appendChild(row);
-      }
+      const row = document.createElement("div");
+      row.className = "input-row";
+      row.innerHTML = `
+        <label>Name:<br><input type="text" class="nameInput"></label>
+        <label>Hours:<br><input type="number" class="hoursInput" step="0.01"></label>
+      `;
+      container.appendChild(row);
     }
 
     function calculateTips() {
@@ -164,4 +159,5 @@
   </script>
 </body>
 </html>
+
 
