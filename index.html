@@ -34,7 +34,7 @@
       border: 1px solid #ccc;
       width: 160px;
     }
-    button {
+    button, select {
       padding: 10px 20px;
       background-color: #007BFF;
       color: white;
@@ -72,6 +72,12 @@
     <h2>Tip Distribution Calculator</h2>
     <label>Total Tips ($): <input type="number" id="totalTips" value="242"></label>
     <label>Number of People: <input type="number" id="numPeople" value="11"></label>
+    <label>Round Tips:
+      <select id="roundingOption">
+        <option value="noCoins">No Coins (Whole Dollars)</option>
+        <option value="withCoins">Allow Coins</option>
+      </select>
+    </label>
     <button onclick="generateInputs()">Set People</button>
 
     <div id="peopleInputs"></div>
@@ -82,7 +88,7 @@
         <tr>
           <th>Name</th>
           <th>Hours Worked</th>
-          <th>Tip Share (No Coins)</th>
+          <th>Tip Share</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -106,7 +112,8 @@
     }
 
     function calculateTips() {
-      const totalTips = parseInt(document.getElementById("totalTips").value);
+      const totalTips = parseFloat(document.getElementById("totalTips").value);
+      const roundingOption = document.getElementById("roundingOption").value;
       const nameInputs = document.querySelectorAll(".nameInput");
       const hoursInputs = document.querySelectorAll(".hoursInput");
       const hoursData = {};
@@ -121,22 +128,30 @@
 
       const totalHours = Object.values(hoursData).reduce((a, b) => a + b, 0);
       const tipShares = {};
-      let distributed = 0;
-      let remainders = [];
 
-      for (const [name, hours] of Object.entries(hoursData)) {
-        const exactTip = (hours / totalHours) * totalTips;
-        const floorTip = Math.floor(exactTip);
-        tipShares[name] = floorTip;
-        distributed += floorTip;
-        remainders.push([name, exactTip - floorTip]);
-      }
+      if (roundingOption === "withCoins") {
+        for (const [name, hours] of Object.entries(hoursData)) {
+          const tip = (hours / totalHours) * totalTips;
+          tipShares[name] = tip.toFixed(2);
+        }
+      } else {
+        let distributed = 0;
+        let remainders = [];
 
-      let remaining = totalTips - distributed;
-      remainders.sort((a, b) => b[1] - a[1]);
+        for (const [name, hours] of Object.entries(hoursData)) {
+          const exactTip = (hours / totalHours) * totalTips;
+          const floorTip = Math.floor(exactTip);
+          tipShares[name] = floorTip;
+          distributed += floorTip;
+          remainders.push([name, exactTip - floorTip]);
+        }
 
-      for (let i = 0; i < remaining; i++) {
-        tipShares[remainders[i][0]]++;
+        let remaining = Math.round(totalTips - distributed);
+        remainders.sort((a, b) => b[1] - a[1]);
+
+        for (let i = 0; i < remaining; i++) {
+          tipShares[remainders[i][0]]++;
+        }
       }
 
       const tbody = document.querySelector("#resultTable tbody");
@@ -149,3 +164,4 @@
   </script>
 </body>
 </html>
+
